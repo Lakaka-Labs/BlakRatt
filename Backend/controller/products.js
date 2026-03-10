@@ -3,7 +3,7 @@ require("dotenv").config();
 const Product = require("../models/products");
 const SpecialCategory = require("../models/specialCategory");
 const SuperSpecialCategory = require("../models/superSpecialCategory");
-const blobServiceClient = require("../azure/azureStorage");
+const { uploadToS3, deleteFromS3 } = require("../s3/s3Storage");
 const { BadRequestError, NotFoundError } = require("../errors");
 const mongoose = require("mongoose");
 
@@ -19,21 +19,16 @@ const createProduct = async (req, res) => {
         throw new BadRequestError("Product name already exist");
     }
 
-    // Push Images to Azure Blob Storage
+    // Push Images to S3 Storage
     const imagePromises = req.files.map(async (image) => {
         // Get the file extension (assuming image files)
         const fileExtension = image.originalname.split(".").pop();
-        const blobName = `${Date.now()}-${Math.random()
+        const key = `${Date.now()}-${Math.random()
             .toString(36)
             .substring(7)}.${fileExtension}`;
 
-        const containerName = process.env.BLAK_RATT_IMAGE_CONTAINER_NAME;
-        const containerClient =
-            blobServiceClient.getContainerClient(containerName);
-        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-        await blockBlobClient.upload(image.buffer, image.buffer.length);
-        // return `${process.env.AZURE_IMAGE_URL}${blobName}`;
-        return blobName;
+        await uploadToS3(image.buffer, key, image.mimetype);
+        return key;
     });
     const images = await Promise.all(imagePromises);
     req.body.images = images;
@@ -151,14 +146,9 @@ const deleteProduct = async (req, res) => {
         throw new NotFoundError("Product not found");
     }
 
-    // Delete images from azure blob storage
-    const containerName = process.env.BLAK_RATT_IMAGE_CONTAINER_NAME;
+    // Delete images from S3 storage
     const imagePromises = product.images.map(async (imageName) => {
-        const containerClient =
-            blobServiceClient.getContainerClient(containerName);
-        const blockBlobClient = containerClient.getBlockBlobClient(imageName);
-        await blockBlobClient.deleteIfExists();
-        // return;
+        await deleteFromS3(imageName);
     });
 
     await Promise.all(imagePromises);
@@ -194,24 +184,14 @@ const deleteProductImage = async (req, res) => {
             throw new NotFoundError("Image not found in product images");
         }
         try {
-            // Delete image from azure blob storage
-            const containerName = process.env.BLAK_RATT_IMAGE_CONTAINER_NAME;
-            const containerClient =
-                blobServiceClient.getContainerClient(containerName);
-            const blockBlobClient =
-                containerClient.getBlockBlobClient(imageName);
-
-            await blockBlobClient.deleteIfExists();
+            // Delete image from S3 storage
+            await deleteFromS3(imageName);
             const images = product.images.filter(
                 (image) => image !== imageName
             );
             product.images = images;
-            // return imageName;
         } catch (error) {
-            console.log(error.details);
-            // if (error.details.code === "BlobNotFound") {
-            //     throw new NotFoundError("Image not found");
-            // }
+            console.log(error);
             throw new BadRequestError("Error deleting image");
         }
     });
@@ -249,21 +229,16 @@ const addProductImage = async (req, res) => {
         throw new NotFoundError("Product not found");
     }
 
-    // Push Images to Azure Blob Storage
+    // Push Images to S3 Storage
     const imagePromises = req.files.map(async (image) => {
         // Get the file extension (assuming image files)
         const fileExtension = image.originalname.split(".").pop();
-        const blobName = `${Date.now()}-${Math.random()
+        const key = `${Date.now()}-${Math.random()
             .toString(36)
             .substring(7)}.${fileExtension}`;
 
-        const containerName = process.env.BLAK_RATT_IMAGE_CONTAINER_NAME;
-        const containerClient =
-            blobServiceClient.getContainerClient(containerName);
-        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-        await blockBlobClient.upload(image.buffer, image.buffer.length);
-        // return `${process.env.AZURE_IMAGE_URL}${blobName}`;
-        return blobName;
+        await uploadToS3(image.buffer, key, image.mimetype);
+        return key;
     });
     const images = await Promise.all(imagePromises);
     product.images = [...product.images, ...images];

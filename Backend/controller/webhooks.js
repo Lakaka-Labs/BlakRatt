@@ -2,9 +2,18 @@ const Order = require("../models/orders");
 const Product = require("../models/products");
 const stripe = require("stripe")(process.env.STRIPE_SECRETE_KEY);
 const crypto = require("node:crypto");
-const { EmailClient } = require("@azure/communication-email");
+const nodemailer = require("nodemailer");
 
-const emailClient = new EmailClient(process.env.AZURE_COMMUNICATION_CONNECTION_STRING);
+// Create SMTP transporter
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === "true",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 const generateOrderEmailHTML = (order) => {
   const productRows = order.products
@@ -196,30 +205,20 @@ const generateOrderEmailHTML = (order) => {
   `;
 };
 
-// Send order confirmation email using Azure Communication Services
+// Send order confirmation email using SMTP
 const sendOrderConfirmationEmail = async (order) => {
-  const emailMessage = {
-    senderAddress: process.env.AZURE_SENDER_ADDRESS,
-    content: {
-      subject: `Order Confirmation - #${order._id}`,
-      html: generateOrderEmailHTML(order),
-      plainText: `Hi ${order.firstName}, Thank you for your order! Your Order ID is: ${order._id}. Total: ₦${order.totalPrice.toFixed(2)}`,
-    },
-    recipients: {
-      to: [
-        {
-          address: order.email,
-          displayName: `${order.firstName} ${order.lastName}`,
-        },
-      ],
-    },
+  const mailOptions = {
+    from: `"${process.env.SMTP_FROM_NAME || 'BLAKRATT'}" <${process.env.SMTP_FROM_EMAIL}>`,
+    to: order.email,
+    subject: `Order Confirmation - #${order._id}`,
+    html: generateOrderEmailHTML(order),
+    text: `Hi ${order.firstName}, Thank you for your order! Your Order ID is: ${order._id}. Total: ₦${order.totalPrice.toFixed(2)}`,
   };
 
   try {
-    const poller = await emailClient.beginSend(emailMessage);
-    const result = await poller.pollUntilDone();
-    console.log("Email sent successfully. Message ID:", result.id);
-    return result;
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully. Message ID:", info.messageId);
+    return info;
   } catch (error) {
     console.error("Error sending email:", error);
     throw error;

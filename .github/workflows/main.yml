@@ -66,17 +66,17 @@ jobs:
               run: |
                   echo "Checking if secrets are set (showing first 10 chars only for security)..."
                   echo "VITE_BACKEND_URL: ${VITE_BACKEND_URL:0:10}..."
-                  echo "VITE_BLOB_URL: ${VITE_BLOB_URL:0:10}..."
+                  echo "VITE_S3_URL: ${VITE_S3_URL:0:10}..."
               env:
                   VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
-                  VITE_BLOB_URL: ${{ secrets.VITE_BLOB_URL }}
+                  VITE_S3_URL: ${{ secrets.VITE_S3_URL }}
 
             - name: Build Admin Docker Image
               run: |
                   echo "Building Admin with VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }}"
                   docker build --no-cache -t ${{ env.DOCKER_ADMIN_IMAGE }}:${{ github.sha }} \
                     --build-arg VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }} \
-                    --build-arg VITE_BLOB_URL=${{ secrets.VITE_BLOB_URL }} \
+                    --build-arg VITE_S3_URL=${{ secrets.VITE_S3_URL }} \
                     ./Admin
 
             - name: Build Frontend Docker Image
@@ -84,7 +84,7 @@ jobs:
                   echo "Building Frontend with VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }}"
                   docker build --no-cache -t ${{ env.DOCKER_FRONTEND_IMAGE }}:${{ github.sha }} \
                     --build-arg VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL }} \
-                    --build-arg VITE_BLOB_URL=${{ secrets.VITE_BLOB_URL }} \
+                    --build-arg VITE_S3_URL=${{ secrets.VITE_S3_URL }} \
                     ./Frontend
 
             - name: Debug - Verify Built Images Have Correct URLs
@@ -136,19 +136,25 @@ jobs:
                       -p 5000:5000 \
                       -e MONGODB_URL="${{ secrets.MONGODB_URL }}" \
                       -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-                      -e BLAK_RATT_IMAGE_CONTAINER_NAME="${{ secrets.BLAK_RATT_IMAGE_CONTAINER_NAME }}" \
-                      -e AZURE_IMAGE_URL="${{ secrets.AZURE_IMAGE_URL }}" \
-                      -e BLAK_RATT_DASHBOARD_IMAGE_CONTAINER_NAME="${{ secrets.BLAK_RATT_DASHBOARD_IMAGE_CONTAINER_NAME }}" \
-                      -e AZURE_STORAGE_ACCOUNT_NAME="${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" \
+                      -e S3_ENDPOINT="${{ secrets.S3_ENDPOINT }}" \
+                      -e S3_REGION="${{ secrets.S3_REGION }}" \
+                      -e S3_ACCESS_KEY_ID="${{ secrets.S3_ACCESS_KEY_ID }}" \
+                      -e S3_SECRET_ACCESS_KEY="${{ secrets.S3_SECRET_ACCESS_KEY }}" \
+                      -e S3_BUCKET_NAME="${{ secrets.S3_BUCKET_NAME }}" \
+                      -e S3_FORCE_PATH_STYLE="${{ secrets.S3_FORCE_PATH_STYLE }}" \
                       -e CLIENT_ORIGIN_1="${{ secrets.CLIENT_ORIGIN_1 }}" \
                       -e CLIENT_ORIGIN_2="${{ secrets.CLIENT_ORIGIN_2 }}" \
                       -e COOKIE_SECRET="${{ secrets.COOKIE_SECRET }}" \
                       -e PORT="${{ secrets.PORT }}" \
-                      -e AZURE_STORAGE_CONNECTION_STRING="${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
                       -e NGROK_AUTH_TOKEN="${{ secrets.NGROK_AUTH_TOKEN }}" \
                       -e PAYSTACK_SECRETE_KEY="${{ secrets.PAYSTACK_SECRETE_KEY }}" \
-                      -e AZURE_COMMUNICATION_CONNECTION_STRING="${{ secrets.AZURE_COMMUNICATION_CONNECTION_STRING }}" \
-                      -e AZURE_SENDER_ADDRESS="${{ secrets.AZURE_SENDER_ADDRESS }}" \
+                      -e SMTP_HOST="${{ secrets.SMTP_HOST }}" \
+                      -e SMTP_PORT="${{ secrets.SMTP_PORT }}" \
+                      -e SMTP_SECURE="${{ secrets.SMTP_SECURE }}" \
+                      -e SMTP_USER="${{ secrets.SMTP_USER }}" \
+                      -e SMTP_PASS="${{ secrets.SMTP_PASS }}" \
+                      -e SMTP_FROM_EMAIL="${{ secrets.SMTP_FROM_EMAIL }}" \
+                      -e SMTP_FROM_NAME="${{ secrets.SMTP_FROM_NAME }}" \
                       --restart unless-stopped \
                       --health-cmd="wget -q --spider http://localhost:5000/health || exit 1" \
                       --health-interval=30s \

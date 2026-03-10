@@ -8,9 +8,18 @@ const Shipping = require("../models/shippings");
 const { Paystack } = require("paystack-sdk");
 const Product = require("../models/products");
 const stripe = require("stripe")(process.env.STRIPE_SECRETE_KEY);
-const { EmailClient } = require("@azure/communication-email");
+const nodemailer = require("nodemailer");
 
-const emailClient = new EmailClient(process.env.AZURE_COMMUNICATION_CONNECTION_STRING);
+// Create SMTP transporter
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === "true",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 // Status display configuration
 const getStatusConfig = (status) => {
@@ -188,32 +197,22 @@ const generateStatusUpdateEmailHTML = (order) => {
   `;
 };
 
-// Send order status update email using Azure Communication Services
+// Send order status update email using SMTP
 const sendOrderStatusUpdateEmail = async (order) => {
   const statusConfig = getStatusConfig(order.status);
   
-  const emailMessage = {
-    senderAddress: process.env.AZURE_SENDER_ADDRESS,
-    content: {
-      subject: `Order Update: ${statusConfig.statusLabel} - #${order._id}`,
-      html: generateStatusUpdateEmailHTML(order),
-      plainText: `Hi ${order.firstName}, Your order #${order._id} status has been updated to: ${statusConfig.statusLabel}. ${statusConfig.subheadline}`,
-    },
-    recipients: {
-      to: [
-        {
-          address: order.email,
-          displayName: `${order.firstName} ${order.lastName}`,
-        },
-      ],
-    },
+  const mailOptions = {
+    from: `"${process.env.SMTP_FROM_NAME || 'BLAKRATT'}" <${process.env.SMTP_FROM_EMAIL}>`,
+    to: order.email,
+    subject: `Order Update: ${statusConfig.statusLabel} - #${order._id}`,
+    html: generateStatusUpdateEmailHTML(order),
+    text: `Hi ${order.firstName}, Your order #${order._id} status has been updated to: ${statusConfig.statusLabel}. ${statusConfig.subheadline}`,
   };
 
   try {
-    const poller = await emailClient.beginSend(emailMessage);
-    const result = await poller.pollUntilDone();
-    console.log("Status update email sent successfully. Message ID:", result.id);
-    return result;
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Status update email sent successfully. Message ID:", info.messageId);
+    return info;
   } catch (error) {
     console.error("Error sending status update email:", error);
     throw error;
