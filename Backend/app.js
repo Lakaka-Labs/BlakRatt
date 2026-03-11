@@ -26,15 +26,19 @@ const connectToMongodb = require("./mongoDb");
 //     credentials: true,
 // };
 const corsOptions = {
-  origin: [process.env.CLIENT_ORIGIN_1, process.env.CLIENT_ORIGIN_2],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'ngrok-skip-browser-warning' // Important for ngrok
-  ],
+    origin: [
+        process.env.CLIENT_ORIGIN_1,
+        process.env.CLIENT_ORIGIN_2,
+        process.env.CLIENT_ORIGIN_3,
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "ngrok-skip-browser-warning", // Important for ngrok
+    ],
 };
 app.use(cors(corsOptions));
 
@@ -66,7 +70,7 @@ app.get(
     (req, res) => {
         console.log({ files: req.files, body: req.body });
         res.json({ msg: "Welcome To Asis" });
-    }
+    },
 );
 
 // AUTHENTICATION ROUTES
