@@ -446,6 +446,17 @@ const sendOwnerOrderNotificationEmail = async (order) => {
     }
 };
 
+// Reduce product stock quantities after successful payment
+const reduceProductStock = async (order) => {
+    const updatePromises = order.products.map((item) =>
+        Product.findOneAndUpdate(
+            { _id: item.product, "countInStock.size": item.size },
+            { $inc: { "countInStock.$.quantity": -item.quantity } }
+        )
+    );
+    await Promise.all(updatePromises);
+};
+
 const stripeWebhook = async (req, res) => {
     const sig = req.headers["stripe-signature"];
 
@@ -487,9 +498,10 @@ const stripeWebhook = async (req, res) => {
                 await Promise.allSettled([
                     sendOrderConfirmationEmail(order),
                     sendOwnerOrderNotificationEmail(order),
+                    reduceProductStock(order),
                 ]);
             } catch (emailError) {
-                console.error("Failed to send order emails:", emailError);
+                console.error("Failed to send order emails or reduce stock:", emailError);
             }
             return res.status(200).send();
         default:
@@ -524,9 +536,10 @@ const paystackWebhook = async (req, res) => {
                 await Promise.allSettled([
                     sendOrderConfirmationEmail(order),
                     sendOwnerOrderNotificationEmail(order),
+                    reduceProductStock(order),
                 ]);
             } catch (emailError) {
-                console.error("Failed to send order emails:", emailError);
+                console.error("Failed to send order emails or reduce stock:", emailError);
             }
         } catch (error) {
             console.log(error);
