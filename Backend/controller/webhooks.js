@@ -232,7 +232,158 @@ const generateOrderEmailHTML = (order) => {
   `;
 };
 
-// Send order confirmation email using SMTP
+const generateOwnerOrderEmailHTML = (order) => {
+    const productRows = order.products
+        .map(
+            (item) => `
+      <tr>
+        <td style="padding: 14px 0; border-bottom: 1px solid #E5E7EB;">
+          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; color: #111827; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 2px;">${
+              item.name
+          }</div>
+          <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 11px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">SIZE: ${
+              item.size || "OS"
+          } // QTY: ${item.quantity}</div>
+        </td>
+        <td style="padding: 14px 0; border-bottom: 1px solid #E5E7EB; text-align: right; vertical-align: top;">
+          <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; font-weight: 600; color: #111827;">₦${item.price.toFixed(
+              2,
+          )}</div>
+        </td>
+      </tr>
+    `,
+        )
+        .join("");
+
+    const subtotal = order.products.reduce((sum, item) => sum + item.price, 0);
+    const shippingTotal =
+        order.shipping && order.shipping.length > 0
+            ? order.shipping.reduce((sum, s) => sum + (s.fee || 0), 0)
+            : 0;
+    const shippingMethodName =
+        order.shipping && order.shipping.length > 0
+            ? order.shipping.map((s) => s.name).join(", ")
+            : "Standard Dispatch";
+
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>NEW ORDER | ACTION REQUIRED</title>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #F3F4F6; -webkit-font-smoothing: antialiased;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F3F4F6;">
+        <tr>
+          <td align="center" style="padding: 40px 20px;">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; text-align: left;">
+
+              <!-- Urgent Header -->
+              <tr>
+                <td style="background-color: #000000; padding: 24px 32px; border-radius: 8px 8px 0 0;">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td>
+                        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.04em; color: #FFFFFF; text-transform: uppercase;">
+                          CAINS STORE<span style="color: #FF0000;">.</span>
+                        </div>
+                      </td>
+                      <td align="right">
+                        <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 11px; font-weight: 700; color: #FCA5A5; text-transform: uppercase; letter-spacing: 0.1em;">⚡ NEW ORDER</div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Body -->
+              <tr>
+                <td style="background-color: #FFFFFF; padding: 32px; border-radius: 0 0 8px 8px;">
+
+                  <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; color: #111827; margin-bottom: 4px;">New Order Received</div>
+                  <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; color: #6B7280; margin-bottom: 28px;">Order #${order._id} — ${new Date().toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" })}</div>
+
+                  <!-- Customer Info -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F9FAFB; border-radius: 6px; margin-bottom: 24px;">
+                    <tr>
+                      <td style="padding: 20px;">
+                        <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-bottom: 12px;">CUSTOMER DETAILS</div>
+                        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; color: #111827; line-height: 1.6;">
+                          <strong>${order.firstName} ${order.lastName}</strong><br>
+                          ${order.email}<br>
+                          ${order.phone || "No phone provided"}
+                        </div>
+                      </td>
+                      <td style="padding: 20px; vertical-align: top;">
+                        <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-bottom: 12px;">SHIPPING ADDRESS</div>
+                        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; color: #111827; line-height: 1.6;">
+                          ${order.address}<br>
+                          ${order.city}, ${order.state} ${order.zip}<br>
+                          ${order.country || ""}
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Items -->
+                  <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-bottom: 8px;">ORDER ITEMS</div>
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+                    <tbody>
+                      ${productRows}
+                    </tbody>
+                  </table>
+
+                  <!-- Totals -->
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F9FAFB; border-radius: 6px; margin-bottom: 24px;">
+                    <tr>
+                      <td style="padding: 16px 20px;">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #6B7280; padding-bottom: 6px;">Subtotal</td>
+                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; color: #6B7280; padding-bottom: 6px;">₦${subtotal.toFixed(2)}</td>
+                          </tr>
+                          <tr>
+                            <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #6B7280; padding-bottom: 12px;">Shipping (${shippingMethodName})</td>
+                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; color: #6B7280; padding-bottom: 12px;">₦${shippingTotal.toFixed(2)}</td>
+                          </tr>
+                          <tr>
+                            <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; color: #111827; border-top: 2px solid #E5E7EB; padding-top: 12px;">Total</td>
+                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 18px; font-weight: 800; color: #111827; border-top: 2px solid #E5E7EB; padding-top: 12px;">₦${order.totalPrice.toFixed(2)}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Action -->
+                  <div style="text-align: center; padding: 8px 0 12px;">
+                    <a href="${process.env.ADMIN_ORIGIN || process.env.CLIENT_ORIGIN_1}/orders" style="display: inline-block; background-color: #000000; color: #FFFFFF; font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; text-decoration: none; padding: 16px 36px; border-radius: 6px;">
+                      VIEW IN DASHBOARD →
+                    </a>
+                  </div>
+
+                  <!-- Footer -->
+                  <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #E5E7EB; text-align: center;">
+                    <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 10px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.8;">
+                      This is an automated order notification from CAINS STORE.<br>
+                      &copy; ${new Date().getFullYear()} CAINS STORE. All rights reserved.
+                    </div>
+                  </div>
+
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+};
+
+// Send order confirmation email to customer using SMTP
 const sendOrderConfirmationEmail = async (order) => {
     const mailOptions = {
         from: `"${process.env.SMTP_FROM_NAME || "CAINS STORE"}" <${
@@ -250,10 +401,34 @@ const sendOrderConfirmationEmail = async (order) => {
 
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully. Message ID:", info.messageId);
+        console.log("Customer email sent successfully. Message ID:", info.messageId);
         return info;
     } catch (error) {
-        console.error("Error sending email:", error);
+        console.error("Error sending customer email:", error);
+        throw error;
+    }
+};
+
+// Send order notification email to store owner using SMTP
+const sendOwnerOrderNotificationEmail = async (order) => {
+    const ownerEmail = process.env.OWNER_EMAIL || process.env.SMTP_FROM_EMAIL;
+
+    const mailOptions = {
+        from: `"${process.env.SMTP_FROM_NAME || "CAINS STORE"}" <${
+            process.env.SMTP_FROM_EMAIL
+        }>`,
+        to: ownerEmail,
+        subject: `⚡ New Order #${order._id} — ₦${order.totalPrice.toFixed(2)} from ${order.firstName} ${order.lastName}`,
+        html: generateOwnerOrderEmailHTML(order),
+        text: `New order received! Order #${order._id} from ${order.firstName} ${order.lastName} (${order.email}). Total: ₦${order.totalPrice.toFixed(2)}. Items: ${order.products.map((p) => p.name).join(", ")}. Ship to: ${order.address}, ${order.city}, ${order.state} ${order.zip}.`,
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Owner notification email sent successfully. Message ID:", info.messageId);
+        return info;
+    } catch (error) {
+        console.error("Error sending owner notification email:", error);
         throw error;
     }
 };
@@ -296,9 +471,12 @@ const stripeWebhook = async (req, res) => {
             order.paymentStatus = "successful";
             await order.save();
             try {
-                await sendOrderConfirmationEmail(order);
+                await Promise.allSettled([
+                    sendOrderConfirmationEmail(order),
+                    sendOwnerOrderNotificationEmail(order),
+                ]);
             } catch (emailError) {
-                console.error("Failed to send confirmation email:", emailError);
+                console.error("Failed to send order emails:", emailError);
             }
             return res.status(200).send();
         default:
@@ -330,9 +508,12 @@ const paystackWebhook = async (req, res) => {
             await order.save();
 
             try {
-                await sendOrderConfirmationEmail(order);
+                await Promise.allSettled([
+                    sendOrderConfirmationEmail(order),
+                    sendOwnerOrderNotificationEmail(order),
+                ]);
             } catch (emailError) {
-                console.error("Failed to send confirmation email:", emailError);
+                console.error("Failed to send order emails:", emailError);
             }
         } catch (error) {
             console.log(error);

@@ -171,7 +171,7 @@ const Cart = ({ setHideCart }) => {
       ref={ref}
       className="fixed w-full md:w-1/3 z-20 top-0 bottom-0"
     >
-      <div className=" h-full w-full overflow-hidden bg-[url('/bg.png')] bg-left-top uppercase shadow-[-7px_8px_30px_0px_#00000033] md:min-w-[28rem]">
+      <div className="relative h-full w-full overflow-hidden bg-[url('/bg.png')] bg-left-top uppercase shadow-[-7px_8px_30px_0px_#00000033] md:min-w-[28rem]">
         {isLoading && <CartLoading />}
         {!isLoading && cartData?.products?.length >= 1 ? (
           // Cart with items
