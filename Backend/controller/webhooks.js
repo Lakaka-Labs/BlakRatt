@@ -302,7 +302,12 @@ const generateOwnerOrderEmailHTML = (order) => {
                 <td style="background-color: #FFFFFF; padding: 32px; border-radius: 0 0 8px 8px;">
 
                   <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; color: #111827; margin-bottom: 4px;">New Order Received</div>
-                  <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; color: #6B7280; margin-bottom: 28px;">Order #${order._id} — ${new Date().toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" })}</div>
+                  <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; color: #6B7280; margin-bottom: 28px;">Order #${
+                      order._id
+                  } — ${new Date().toLocaleString("en-NG", {
+        dateStyle: "medium",
+        timeStyle: "short",
+    })}</div>
 
                   <!-- Customer Info -->
                   <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F9FAFB; border-radius: 6px; margin-bottom: 24px;">
@@ -310,7 +315,9 @@ const generateOwnerOrderEmailHTML = (order) => {
                       <td style="padding: 20px;">
                         <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-bottom: 12px;">CUSTOMER DETAILS</div>
                         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; color: #111827; line-height: 1.6;">
-                          <strong>${order.firstName} ${order.lastName}</strong><br>
+                          <strong>${order.firstName} ${
+        order.lastName
+    }</strong><br>
                           ${order.email}<br>
                           ${order.phone || "No phone provided"}
                         </div>
@@ -341,15 +348,21 @@ const generateOwnerOrderEmailHTML = (order) => {
                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                           <tr>
                             <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #6B7280; padding-bottom: 6px;">Subtotal</td>
-                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; color: #6B7280; padding-bottom: 6px;">₦${subtotal.toFixed(2)}</td>
+                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; color: #6B7280; padding-bottom: 6px;">₦${subtotal.toFixed(
+                                2,
+                            )}</td>
                           </tr>
                           <tr>
                             <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #6B7280; padding-bottom: 12px;">Shipping (${shippingMethodName})</td>
-                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; color: #6B7280; padding-bottom: 12px;">₦${shippingTotal.toFixed(2)}</td>
+                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; color: #6B7280; padding-bottom: 12px;">₦${shippingTotal.toFixed(
+                                2,
+                            )}</td>
                           </tr>
                           <tr>
                             <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; color: #111827; border-top: 2px solid #E5E7EB; padding-top: 12px;">Total</td>
-                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 18px; font-weight: 800; color: #111827; border-top: 2px solid #E5E7EB; padding-top: 12px;">₦${order.totalPrice.toFixed(2)}</td>
+                            <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 18px; font-weight: 800; color: #111827; border-top: 2px solid #E5E7EB; padding-top: 12px;">₦${order.totalPrice.toFixed(
+                                2,
+                            )}</td>
                           </tr>
                         </table>
                       </td>
@@ -358,7 +371,7 @@ const generateOwnerOrderEmailHTML = (order) => {
 
                   <!-- Action -->
                   <div style="text-align: center; padding: 8px 0 12px;">
-                    <a href="${process.env.ADMIN_ORIGIN || process.env.CLIENT_ORIGIN_1}/orders" style="display: inline-block; background-color: #000000; color: #FFFFFF; font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; text-decoration: none; padding: 16px 36px; border-radius: 6px;">
+                    <a href="https://admin.cainsstore.com/orders" style="display: inline-block; background-color: #000000; color: #FFFFFF; font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; text-decoration: none; padding: 16px 36px; border-radius: 6px;">
                       VIEW IN DASHBOARD →
                     </a>
                   </div>
