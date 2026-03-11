@@ -72,7 +72,7 @@ const getProducts = async (req, res) => {
 
     // get products for admin
     let result = Product.find(queryObject).select(
-        "-admin -createdAt -updatedAt -__v"
+        "-admin -createdAt -updatedAt -__v",
     );
 
     if (sort) {
@@ -126,6 +126,8 @@ const getProductById = async (req, res) => {
     }
 
     // send product
+    res.set("Cache-Control", "private, no-cache");
+
     res.json(product);
 };
 
@@ -187,7 +189,7 @@ const deleteProductImage = async (req, res) => {
             // Delete image from S3 storage
             await deleteFromS3(imageName);
             const images = product.images.filter(
-                (image) => image !== imageName
+                (image) => image !== imageName,
             );
             product.images = images;
         } catch (error) {
