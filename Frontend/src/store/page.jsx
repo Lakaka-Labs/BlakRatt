@@ -74,7 +74,7 @@ const Page = () => {
       ) : (
         <main className="flex flex-col items-center py-[10.4vh]">
           <h1 className="mb-10 w-full text-center font-playfair text-[10vw] uppercase leading-none md:mb-20 md:text-[6vw]">
-            <VowelItalicizer text="BLAKRATT" />
+            <VowelItalicizer text="CAINS STORE" />
           </h1>
           <Filter
             category={category}

@@ -7,7 +7,7 @@
     font-weight: bold;
     color: #0B0B0B;" 
 >
-    BLAK RATT
+    CAINS STORE
 </p> -->
 <p
     align="center"
@@ -46,10 +46,7 @@ style="font-size: 1.5rem; color: #0B0B0B; margin-bottom: 2rem;"
 Home Page
 </p>
 
-
-
 https://github.com/Pr3c10us/Asis/assets/96595416/598d4d30-297d-44d1-b5c4-ade43690a0dc
-
 
 <p
 style="font-size: 1.5rem; color: #0B0B0B; margin-bottom: 2rem;"
@@ -73,11 +70,7 @@ style="font-size: 1.5rem; color: #0B0B0B; margin-bottom: 2rem;"
 Cart Page
 </p>
 
-
-
 https://github.com/Pr3c10us/Asis/assets/96595416/0274c2f9-0b21-4d65-8f38-04d74f2c79c6
-
-
 
 <p
 style="font-size: 1.5rem; color: #0B0B0B; margin-bottom: 2rem;"
@@ -88,6 +81,7 @@ Checkout Page
 https://github.com/Pr3c10us/Asis/assets/96595416/cc57afd3-195e-461c-af04-583da3341d73
 
 # FEATURES
+
 <li>Easy to use cart system.</li>
 <li>Simplified and secure checkout with stripe.</li>
 <li>Order tracking.</li>
@@ -95,6 +89,7 @@ https://github.com/Pr3c10us/Asis/assets/96595416/cc57afd3-195e-461c-af04-583da33
 <li style="margin-bottom:2rem">Intuitive pagination and filters for products.</li>
 
 # CONTACT
+
 ### UI DESIGNER
 
 <li>Name: Samuel Alake</li>

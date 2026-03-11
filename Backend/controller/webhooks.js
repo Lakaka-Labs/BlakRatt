@@ -6,68 +6,83 @@ const nodemailer = require("nodemailer");
 
 // Create SMTP transporter
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT) || 587,
-  secure: process.env.SMTP_SECURE === "true",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === "true",
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+    },
 });
 
 const generateOrderEmailHTML = (order) => {
-  const productRows = order.products
-    .map(
-      (item) => `
+    const productRows = order.products
+        .map(
+            (item) => `
       <tr>
         <td style="padding: 20px 0; border-bottom: 2px solid #000000;">
-          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 800; color: #000000; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 4px;">${item.name}</div>
-          <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 11px; color: #666666; text-transform: uppercase; letter-spacing: 0.05em;">SIZE: ${item.size || "OS"} // QTY: ${item.quantity}</div>
+          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 800; color: #000000; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 4px;">${
+              item.name
+          }</div>
+          <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 11px; color: #666666; text-transform: uppercase; letter-spacing: 0.05em;">SIZE: ${
+              item.size || "OS"
+          } // QTY: ${item.quantity}</div>
         </td>
         <td style="padding: 20px 0; border-bottom: 2px solid #000000; text-align: right; vertical-align: top;">
-          <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 14px; font-weight: 600; color: #000000;">₦${item.price.toFixed(2)}</div>
+          <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 14px; font-weight: 600; color: #000000;">₦${item.price.toFixed(
+              2,
+          )}</div>
         </td>
       </tr>
-    `
-    )
-    .join("");
+    `,
+        )
+        .join("");
 
-  // Calculate subtotal (products only)
-  const subtotal = order.products.reduce((sum, item) => sum + item.price, 0);
+    // Calculate subtotal (products only)
+    const subtotal = order.products.reduce((sum, item) => sum + item.price, 0);
 
-  // Calculate total shipping fee
-  const shippingTotal = order.shipping && order.shipping.length > 0
-    ? order.shipping.reduce((sum, s) => sum + (s.fee || 0), 0)
-    : 0;
+    // Calculate total shipping fee
+    const shippingTotal =
+        order.shipping && order.shipping.length > 0
+            ? order.shipping.reduce((sum, s) => sum + (s.fee || 0), 0)
+            : 0;
 
-  // Get shipping method name(s)
-  const shippingMethodName = order.shipping && order.shipping.length > 0
-    ? order.shipping.map(s => s.name).join(", ")
-    : "Standard Dispatch";
+    // Get shipping method name(s)
+    const shippingMethodName =
+        order.shipping && order.shipping.length > 0
+            ? order.shipping.map((s) => s.name).join(", ")
+            : "Standard Dispatch";
 
-  // Generate shipping rows for the receipt
-  const shippingRows = order.shipping && order.shipping.length > 0
-    ? order.shipping.map(
-        (s) => `
+    // Generate shipping rows for the receipt
+    const shippingRows =
+        order.shipping && order.shipping.length > 0
+            ? order.shipping
+                  .map(
+                      (s) => `
         <tr>
           <td style="padding: 12px 0; border-bottom: 1px dashed #CCCCCC;">
-            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; color: #666666; text-transform: uppercase; letter-spacing: -0.01em;">${s.name || 'Shipping'}</div>
+            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; color: #666666; text-transform: uppercase; letter-spacing: -0.01em;">${
+                s.name || "Shipping"
+            }</div>
           </td>
           <td style="padding: 12px 0; border-bottom: 1px dashed #CCCCCC; text-align: right; vertical-align: top;">
-            <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; font-weight: 500; color: #666666;">₦${(s.fee || 0).toFixed(2)}</div>
+            <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 13px; font-weight: 500; color: #666666;">₦${(
+                s.fee || 0
+            ).toFixed(2)}</div>
           </td>
         </tr>
-      `
-      ).join("")
-    : "";
+      `,
+                  )
+                  .join("")
+            : "";
 
-  return `
+    return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>BLAKRATT | ACQUISITION CONFIRMED</title>
+      <title>CAINS STORE | ACQUISITION CONFIRMED</title>
     </head>
     <body style="margin: 0; padding: 0; background-color: #FFFFFF; -webkit-font-smoothing: antialiased;">
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #FFFFFF;">
@@ -78,7 +93,7 @@ const generateOrderEmailHTML = (order) => {
               <tr>
                 <td style="padding-bottom: 60px;">
                   <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 28px; font-weight: 900; letter-spacing: -0.05em; color: #000000; text-transform: uppercase;">
-                    BLAKRATT<span style="color: #FF0000;">.</span>
+                    CAINS STORE<span style="color: #FF0000;">.</span>
                   </div>
                 </td>
               </tr>
@@ -98,7 +113,9 @@ const generateOrderEmailHTML = (order) => {
                     <tr>
                       <td style="padding: 15px 20px;">
                         <span style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 11px; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.1em;">Order Ref:</span>
-                        <span style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 11px; font-weight: 600; color: #FFFFFF; margin-left: 8px;">#${order._id}</span>
+                        <span style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 11px; font-weight: 600; color: #FFFFFF; margin-left: 8px;">#${
+                            order._id
+                        }</span>
                       </td>
                     </tr>
                   </table>
@@ -138,15 +155,21 @@ const generateOrderEmailHTML = (order) => {
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; font-weight: 500; color: #666666; text-transform: uppercase; padding-bottom: 8px;">Subtotal</td>
-                      <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 14px; font-weight: 500; color: #666666; padding-bottom: 8px;">₦${subtotal.toFixed(2)}</td>
+                      <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 14px; font-weight: 500; color: #666666; padding-bottom: 8px;">₦${subtotal.toFixed(
+                          2,
+                      )}</td>
                     </tr>
                     <tr>
                       <td style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; font-weight: 500; color: #666666; text-transform: uppercase; padding-bottom: 16px;">Shipping</td>
-                      <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 14px; font-weight: 500; color: #666666; padding-bottom: 16px;">₦${shippingTotal.toFixed(2)}</td>
+                      <td align="right" style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 14px; font-weight: 500; color: #666666; padding-bottom: 16px;">₦${shippingTotal.toFixed(
+                          2,
+                      )}</td>
                     </tr>
                     <tr>
                       <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; color: #000000; text-transform: uppercase; border-top: 2px solid #000000; padding-top: 16px;">Total Acquisition</td>
-                      <td align="right" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 28px; font-weight: 800; color: #000000; border-top: 2px solid #000000; padding-top: 16px;">₦${order.totalPrice.toFixed(2)}</td>
+                      <td align="right" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 28px; font-weight: 800; color: #000000; border-top: 2px solid #000000; padding-top: 16px;">₦${order.totalPrice.toFixed(
+                          2,
+                      )}</td>
                     </tr>
                   </table>
                 </td>
@@ -178,7 +201,9 @@ const generateOrderEmailHTML = (order) => {
 
               <tr>
                 <td style="padding-top: 40px; text-align: center;">
-                  <a href="${process.env.CLIENT_ORIGIN_1}/complete?reference=${order._id}" style="display: inline-block; background-color: #000000; color: #FFFFFF; font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; text-decoration: none; padding: 18px 40px; border: 2px solid #000000; transition: all 0.2s ease;">
+                  <a href="${process.env.CLIENT_ORIGIN_1}/complete?reference=${
+        order._id
+    }" style="display: inline-block; background-color: #000000; color: #FFFFFF; font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; text-decoration: none; padding: 18px 40px; border: 2px solid #000000; transition: all 0.2s ease;">
                     TRACK YOUR ORDER →
                   </a>
                   <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 10px; color: #666666; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 12px;">
@@ -190,8 +215,10 @@ const generateOrderEmailHTML = (order) => {
               <tr>
                 <td style="padding-top: 60px; text-align: center;">
                   <div style="font-family: 'SF Mono', 'Menlo', 'Courier', monospace; font-size: 9px; color: #999999; text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.8;">
-                    This is an automated transmission from BLAKRATT.<br>
-                    &copy; ${new Date().getFullYear()} ALL RIGHTS RESERVED. ARCHIVE NO. ${Math.floor(Math.random() * 100000)}
+                    This is an automated transmission from CAINS STORE.<br>
+                    &copy; ${new Date().getFullYear()} ALL RIGHTS RESERVED. ARCHIVE NO. ${Math.floor(
+        Math.random() * 100000,
+    )}
                   </div>
                 </td>
               </tr>
@@ -207,124 +234,130 @@ const generateOrderEmailHTML = (order) => {
 
 // Send order confirmation email using SMTP
 const sendOrderConfirmationEmail = async (order) => {
-  const mailOptions = {
-    from: `"${process.env.SMTP_FROM_NAME || 'BLAKRATT'}" <${process.env.SMTP_FROM_EMAIL}>`,
-    to: order.email,
-    subject: `Order Confirmation - #${order._id}`,
-    html: generateOrderEmailHTML(order),
-    text: `Hi ${order.firstName}, Thank you for your order! Your Order ID is: ${order._id}. Total: ₦${order.totalPrice.toFixed(2)}`,
-  };
+    const mailOptions = {
+        from: `"${process.env.SMTP_FROM_NAME || "CAINS STORE"}" <${
+            process.env.SMTP_FROM_EMAIL
+        }>`,
+        to: order.email,
+        subject: `Order Confirmation - #${order._id}`,
+        html: generateOrderEmailHTML(order),
+        text: `Hi ${
+            order.firstName
+        }, Thank you for your order! Your Order ID is: ${
+            order._id
+        }. Total: ₦${order.totalPrice.toFixed(2)}`,
+    };
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully. Message ID:", info.messageId);
-    return info;
-  } catch (error) {
-    console.error("Error sending email:", error);
-    throw error;
-  }
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Email sent successfully. Message ID:", info.messageId);
+        return info;
+    } catch (error) {
+        console.error("Error sending email:", error);
+        throw error;
+    }
 };
 
 const stripeWebhook = async (req, res) => {
-  const sig = req.headers["stripe-signature"];
+    const sig = req.headers["stripe-signature"];
 
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRETE
-    );
-  } catch (err) {
-    console.log(err);
-    res.status(400).send(`Webhook Error: ${err.message}`);
-    return;
-  }
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(
+            req.body,
+            sig,
+            process.env.STRIPE_WEBHOOK_SECRETE,
+        );
+    } catch (err) {
+        console.log(err);
+        res.status(400).send(`Webhook Error: ${err.message}`);
+        return;
+    }
 
-  const client_secrete = event.data.object.client_secret;
-  if (!client_secrete) return res.status(200).send("No client_secrete found");
+    const client_secrete = event.data.object.client_secret;
+    if (!client_secrete) return res.status(200).send("No client_secrete found");
 
-  const order = await Order.findOne({ clientSecret: client_secrete });
-  if (!order) {
-    return res.status(200).send();
-  }
+    const order = await Order.findOne({ clientSecret: client_secrete });
+    if (!order) {
+        return res.status(200).send();
+    }
 
-  switch (event.type) {
-    case "payment_intent.canceled":
-      order.paymentStatus = "canceled";
-      break;
-    case "payment_intent.payment_failed":
-      order.paymentStatus = "failed";
-      break;
-    case "payment_intent.processing":
-      order.paymentStatus = "processing";
-      break;
-    case "payment_intent.succeeded":
-      order.paymentStatus = "successful";
-      await order.save();
-      try {
-        await sendOrderConfirmationEmail(order);
-      } catch (emailError) {
-        console.error("Failed to send confirmation email:", emailError);
-      }
-      return res.status(200).send();
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
+    switch (event.type) {
+        case "payment_intent.canceled":
+            order.paymentStatus = "canceled";
+            break;
+        case "payment_intent.payment_failed":
+            order.paymentStatus = "failed";
+            break;
+        case "payment_intent.processing":
+            order.paymentStatus = "processing";
+            break;
+        case "payment_intent.succeeded":
+            order.paymentStatus = "successful";
+            await order.save();
+            try {
+                await sendOrderConfirmationEmail(order);
+            } catch (emailError) {
+                console.error("Failed to send confirmation email:", emailError);
+            }
+            return res.status(200).send();
+        default:
+            console.log(`Unhandled event type ${event.type}`);
+    }
 
-  await order.save();
-  res.status(200).send();
+    await order.save();
+    res.status(200).send();
 };
 
 const paystackWebhook = async (req, res) => {
-  const hash = crypto
-    .createHmac("sha512", process.env.PAYSTACK_SECRETE_KEY)
-    .update(JSON.stringify(req.body))
-    .digest("hex");
+    const hash = crypto
+        .createHmac("sha512", process.env.PAYSTACK_SECRETE_KEY)
+        .update(JSON.stringify(req.body))
+        .digest("hex");
 
-  if (hash !== req.headers["x-paystack-signature"]) {
+    if (hash !== req.headers["x-paystack-signature"]) {
+        return res.status(200).send();
+    }
+
+    if (req.body.event === "charge.success") {
+        const { reference } = req.body.data;
+        try {
+            const order = await Order.findOne({ clientSecret: reference });
+            if (!order) {
+                return res.status(200).send();
+            }
+            order.paymentStatus = "successful";
+            await order.save();
+
+            try {
+                await sendOrderConfirmationEmail(order);
+            } catch (emailError) {
+                console.error("Failed to send confirmation email:", emailError);
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(400).send();
+        }
+    }
+
+    if (req.body.event === "charge.failed") {
+        const { reference } = req.body.data;
+        try {
+            const order = await Order.findOne({ clientSecret: reference });
+            if (!order) {
+                return res.status(200).send();
+            }
+            order.paymentStatus = "failed";
+            await order.save();
+        } catch (error) {
+            console.log(error);
+            return res.status(200).send();
+        }
+    }
     return res.status(200).send();
-  }
-
-  if (req.body.event === "charge.success") {
-    const { reference } = req.body.data;
-    try {
-      const order = await Order.findOne({ clientSecret: reference });
-      if (!order) {
-        return res.status(200).send();
-      }
-      order.paymentStatus = "successful";
-      await order.save();
-
-      try {
-        await sendOrderConfirmationEmail(order);
-      } catch (emailError) {
-        console.error("Failed to send confirmation email:", emailError);
-      }
-    } catch (error) {
-      console.log(error);
-      return res.status(400).send();
-    }
-  }
-
-  if (req.body.event === "charge.failed") {
-    const { reference } = req.body.data;
-    try {
-      const order = await Order.findOne({ clientSecret: reference });
-      if (!order) {
-        return res.status(200).send();
-      }
-      order.paymentStatus = "failed";
-      await order.save();
-    } catch (error) {
-      console.log(error);
-      return res.status(200).send();
-    }
-  }
-  return res.status(200).send();
 };
 
 module.exports = {
-  stripeWebhook,
-  paystackWebhook,
+    stripeWebhook,
+    paystackWebhook,
 };

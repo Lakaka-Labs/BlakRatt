@@ -20,15 +20,15 @@ const About_user = () => {
               FOUNDER. DESIGNER. ARTIST
             </p>
             <p className="text-[14px]/[24px]">
-              Racing back to its inception in 2018, BLAK RATT emerged as a testament
+              Racing back to its inception in 2018, CAINS STORE emerged as a testament
               to my boundless ardor for artistic expression and my unyielding
               fascination with the world of fashion.<br></br> <br></br>Fueled by
               an innate talent for visual art since my earliest days, as well as
               a newfound passion for fashion that ignited during my formative
-              years at the age of 17, BLAK RATT came to life as a manifestation of my
+              years at the age of 17, CAINS STORE came to life as a manifestation of my
               creative vision..<br></br> Unbeknownst to formal training or a
               background in design education, I embarked on the ambitious
-              endeavor of establishing BLAK RATT. With audacity and determination, I
+              endeavor of establishing CAINS STORE. With audacity and determination, I
               sought to redefine the boundaries of traditional fashion,
               unshackled by the constraints of convention. Lacking the resources
               to assemble a dedicated team, I became a tenacious one-person
@@ -42,19 +42,19 @@ const About_user = () => {
               artistry of fashion design, acquainting myself intimately with
               fabrics, silhouettes, and the guiding principles that breathed
               life into sartorial creations. It was the seamless integration of
-              these two realms that transformed BLAK RATT into an unrivaled
+              these two realms that transformed CAINS STORE into an unrivaled
               paradigm-shifter. Merging my visual artistry with fashion design,
               I broke new ground, transcending the boundaries imposed by the
               industry. Art became the very fabric woven into every garment,
               enlivening each design and captivating wearers, offering them an
               immersive experience beyond the constraints of mere clothing.
-              BLAK RATT's resounding impact reverberates through the industry, and I
+              CAINS STORE's resounding impact reverberates through the industry, and I
               take immense pride in having charted this uncharted course. My
               voyage remains unending—a relentless pursuit to design for the
               creative pioneers of the modern world. asis exists as a testament
               to the potency of artistic expression, transcending norms, and
               empowering individuals to inscribe their narratives upon the
-              world's canvas. Step into the realm of BLAK RATT, where creativity
+              world's canvas. Step into the realm of CAINS STORE, where creativity
               finds its voice, and self-expression assumes its rightful throne.
             </p>
           </article>

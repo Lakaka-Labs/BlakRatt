@@ -35,10 +35,10 @@ const Loading = () => {
           y: 100,
           transition: { duration: 1, ease: [0.76, 0, 0.24, 1] },
         }}
-        transition={{ duration: 1,delay:0.5, ease: [0.76, 0, 0.24, 1] }}
+        transition={{ duration: 1, delay: 0.5, ease: [0.76, 0, 0.24, 1] }}
         className="text-center font-cinzel text-[30vw] leading-none text-white mix-blend-difference sm:text-[20vw] lg:text-[15vw]"
       >
-        BLAK RATT
+        CAINS STORE
       </motion.h1>
     </motion.div>
   );

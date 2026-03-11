@@ -61,18 +61,16 @@ const Displayed = ({ product, setNavType, bodyRef }) => {
         {wait && (
           <motion.div
             initial={{
-              x: `calc(${direction == "incr" ? 100 : -100}% + ${
-                direction == "incr" ? 100 : -100
-              }px)`,
+              x: `calc(${direction == "incr" ? 100 : -100}% + ${direction == "incr" ? 100 : -100
+                }px)`,
             }}
             animate={{
               x: "0",
               transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] },
             }}
             exit={{
-              x: `calc(${direction == "incr" ? -100 : 100}% + ${
-                direction == "incr" ? -100 : 100
-              }px)`,
+              x: `calc(${direction == "incr" ? -100 : 100}% + ${direction == "incr" ? -100 : 100
+                }px)`,
               transition: {
                 duration: 0.8,
                 ease: [0.76, 0, 0.24, 1],
@@ -93,7 +91,7 @@ const Displayed = ({ product, setNavType, bodyRef }) => {
               transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
               className="text-center font-cinzel text-[30vw] leading-none text-white sm:text-[20vw] lg:text-[15vw] mix-blend-difference"
             >
-              BLAK RATT
+              CAINS STORE
             </motion.h1>
           </motion.div>
         )}
