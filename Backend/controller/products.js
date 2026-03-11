@@ -126,8 +126,7 @@ const getProductById = async (req, res) => {
     }
 
     // send product
-    res.set("Cache-Control", "private, no-cache");
-
+    res.set("Cache-Control", "private, no-store");
     res.json(product);
 };
 

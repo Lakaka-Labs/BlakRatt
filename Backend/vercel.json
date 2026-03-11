@@ -3,7 +3,8 @@
         {
             "source": "/api/(.*)",
             "headers": [
-                { "key": "Cache-Control", "value": "no-store, no-cache" }
+                { "key": "Cache-Control", "value": "private, no-store" },
+                { "key": "Vary", "value": "Origin" }
             ]
         }
     ]
