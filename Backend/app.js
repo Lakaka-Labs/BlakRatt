@@ -41,6 +41,14 @@ const corsOptions = {
     ],
 };
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // handle preflight for all routes
+
+app.use("/api", (req, res, next) => {
+    res.set("Cache-Control", "private, no-store");
+    res.set("Surrogate-Control", "no-store");
+    res.set("CDN-Cache-Control", "no-store"); // Vercel-specific override
+    next();
+});
 
 // COOKIE PARSER MIDDLEWARE
 app.use(cookieParser(process.env.COOKIE_SECRET));
